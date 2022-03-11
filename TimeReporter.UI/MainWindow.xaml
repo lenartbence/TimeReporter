@@ -1,0 +1,109 @@
+﻿<Window x:Class="TimeReporter.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TimeReporter.UI"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="480" Width="848" WindowStartupLocation="CenterScreen">
+    <Window.DataContext>
+        <local:MainWindowViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <local:DateTimeToDayOfWeekConverter x:Key="DateTimeToDayOfWeekConverter"/>
+        <local:DayTypeToBrushConverter x:Key="DayTypeToBrushConverter"/>
+        <local:BoolToThicknessConverter x:Key="BoolToThicknessConverter"/>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Border BorderBrush="LightGray" BorderThickness="0 0 1 0" Padding="5 0" Margin="0 0 3 0">
+            <Grid Grid.Column="0" HorizontalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <ListBox Grid.Row="0" ItemsSource="{Binding Path=Projects}" SelectedItem="{Binding Path=SelectedDayType}"/>
+                <Button Grid.Row="1" Content=">> Apply to selected >>" Command="{Binding ApplyDayTypeCommand}"/>
+                <Label Grid.Row="2" Content="Exporters:"/>
+                <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Path=Exporters}" >
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="LightGray" BorderThickness="0 0 0 1" Padding="0 5">
+                                    <StackPanel Orientation="Vertical">
+                                        <CheckBox Content="{Binding Path=Name}" IsChecked="{Binding Path=IsEnabled}"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <Label Content="Template Path: " Grid.Row="0" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=TemplatePath}" Grid.Row="0" Grid.Column="1" Margin="0 2"/>
+                                            <Label Content="Export Directory: " Grid.Row="1" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=OutputDirectory}" Grid.Row="1" Grid.Column="1" Margin="0 2"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <DockPanel Grid.Column="1">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="&lt;" Width="20" Height="20" FontWeight="Bold" Command="{Binding Path=PreviousMonthCommand}"/>
+                <Label Content="{Binding Path=CurrentMonth}" 
+                   ContentStringFormat="yyyy MMMM" 
+                   HorizontalContentAlignment="Center"
+                   Width="200"
+                   FontSize="18"
+                   FontWeight="Bold"/>
+                <Button Content=">" Width="20" Height="20" FontWeight="Bold" Command="{Binding Path=NextMonthCommand}"/>
+            </StackPanel>
+
+            <UniformGrid DockPanel.Dock="Top" Columns="7" Rows="1">
+                <Label Content="Monday"/>
+                <Label Content="Tuesday"/>
+                <Label Content="Wednesday"/>
+                <Label Content="Thursday"/>
+                <Label Content="Friday"/>
+                <Label Content="Saturday"/>
+                <Label Content="Sunday"/>
+            </UniformGrid>
+            <ItemsControl ItemsSource="{Binding Path=Days}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="0" Margin="2" 
+                                BorderThickness="{Binding Path=IsSelected, Converter={StaticResource BoolToThicknessConverter}}"
+                                Command="{Binding Path=DataContext.SelectDayCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}">
+                            <Grid Background="{Binding Path=Type, Converter={StaticResource DayTypeToBrushConverter}}">
+                                <Label Grid.Column="0" Content="{Binding Path=Date.Day}" />
+                                <Label Grid.Column="0" Content="{Binding Path=Project}" VerticalAlignment="Bottom"/>
+                            </Grid>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="7" DataContext="{Binding Path=Days}" FirstColumn="{Binding Path=Date,Converter={StaticResource DateTimeToDayOfWeekConverter}}"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </DockPanel>
+    </Grid>
+</Window>
