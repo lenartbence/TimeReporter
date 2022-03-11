@@ -4,15 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TimeReporter.UI"
+        xmlns:vms="clr-namespace:TimeReporter.UI.ViewModels"
+        xmlns:converters="clr-namespace:TimeReporter.UI.Converters"
         mc:Ignorable="d"
         Title="MainWindow" Height="480" Width="848" WindowStartupLocation="CenterScreen">
     <Window.DataContext>
-        <local:MainWindowViewModel/>
+        <vms:MainWindowViewModel/>
     </Window.DataContext>
     <Window.Resources>
-        <local:DateTimeToDayOfWeekConverter x:Key="DateTimeToDayOfWeekConverter"/>
-        <local:DayTypeToBrushConverter x:Key="DayTypeToBrushConverter"/>
-        <local:BoolToThicknessConverter x:Key="BoolToThicknessConverter"/>
+        <converters:DateTimeToDayOfWeekConverter x:Key="DateTimeToDayOfWeekConverter"/> 
+        <converters:DayTypeToBrushConverter x:Key="DayTypeToBrushConverter"/>
+        <converters:BoolToThicknessConverter x:Key="BoolToThicknessConverter"/>
     </Window.Resources>
 
     <Grid>

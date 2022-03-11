@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace TimeReporter.UI
+namespace TimeReporter.UI.Converters
 {
     class BoolToThicknessConverter : IValueConverter
     {

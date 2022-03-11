@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows.Input;
+using TimeReporter.UI.Models;
 
-namespace TimeReporter.UI
+namespace TimeReporter.UI.Commands
 {
     class SelectDayCommand : ICommand
     {

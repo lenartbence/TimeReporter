@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using TimeReporter.Model;
 
-namespace TimeReporter.UI
+namespace TimeReporter.UI.Models
 {
     internal class SelectableDay : Day, INotifyPropertyChanged
     {

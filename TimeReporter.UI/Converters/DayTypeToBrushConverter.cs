@@ -5,7 +5,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using TimeReporter.Model;
 
-namespace TimeReporter.UI
+namespace TimeReporter.UI.Converters
 {
     class DayTypeToBrushConverter : IValueConverter
     {

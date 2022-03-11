@@ -6,8 +6,10 @@ using System.ComponentModel;
 using System.Linq;
 using TimeReporter.Core;
 using TimeReporter.Model;
+using TimeReporter.UI.Commands;
+using TimeReporter.UI.Models;
 
-namespace TimeReporter.UI
+namespace TimeReporter.UI.ViewModels
 {
     class MainWindowViewModel : AbstractViewModel
     {

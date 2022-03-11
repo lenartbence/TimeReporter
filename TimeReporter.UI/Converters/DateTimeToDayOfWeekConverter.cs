@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace TimeReporter.UI
+namespace TimeReporter.UI.Converters
 {
     class DateTimeToDayOfWeekConverter : IValueConverter
     {

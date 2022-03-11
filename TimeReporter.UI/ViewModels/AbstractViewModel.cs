@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace TimeReporter.UI
+namespace TimeReporter.UI.ViewModels
 {
     internal abstract class AbstractViewModel : INotifyPropertyChanged
     {
