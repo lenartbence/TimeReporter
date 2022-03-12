@@ -4,7 +4,7 @@ using TimeReporter.UI.Models;
 
 namespace TimeReporter.UI.Commands
 {
-    class SelectDayCommand : ICommand
+    public class SelectDayCommand : ICommand
     {
         public event EventHandler CanExecuteChanged;
 

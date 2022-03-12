@@ -4,15 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TimeReporter.UI"
-        xmlns:vms="clr-namespace:TimeReporter.UI.ViewModels"
         xmlns:converters="clr-namespace:TimeReporter.UI.Converters"
         mc:Ignorable="d"
-        Title="MainWindow" Height="480" Width="848" WindowStartupLocation="CenterScreen">
-    <Window.DataContext>
-        <vms:MainWindowViewModel/>
-    </Window.DataContext>
+        Title="MainWindow" Height="480" Width="848" WindowStartupLocation="CenterScreen" WindowState="Maximized">
     <Window.Resources>
-        <converters:DateTimeToDayOfWeekConverter x:Key="DateTimeToDayOfWeekConverter"/> 
+        <converters:DateTimeToDayOfWeekConverter x:Key="DateTimeToDayOfWeekConverter"/>
         <converters:DayTypeToBrushConverter x:Key="DayTypeToBrushConverter"/>
         <converters:BoolToThicknessConverter x:Key="BoolToThicknessConverter"/>
     </Window.Resources>
@@ -26,14 +22,15 @@
             <Grid Grid.Column="0" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <ListBox Grid.Row="0" ItemsSource="{Binding Path=Projects}" SelectedItem="{Binding Path=SelectedDayType}"/>
-                <Button Grid.Row="1" Content=">> Apply to selected >>" Command="{Binding ApplyDayTypeCommand}"/>
-                <Label Grid.Row="2" Content="Exporters:"/>
+                <StackPanel Grid.Row="0" Orientation="Vertical">
+                    <ListBox ItemsSource="{Binding Path=Projects}" SelectedItem="{Binding Path=SelectedDayType}"/>
+                    <Button Content=">> Apply to selected >>" Command="{Binding ApplyDayTypeCommand}"/>
+                    <Button Content="Select All Weekdays" Command="{Binding SelectAllWeekdaysCommand}"/>
+                    <Button Content="Deselect All" Command="{Binding DeselectAllCommand}"/>
+                    <Label Content="Exporters:"/>
+                </StackPanel>
                 <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
                     <ItemsControl ItemsSource="{Binding Path=Exporters}" >
                         <ItemsControl.ItemTemplate>
@@ -93,7 +90,7 @@
                                 Command="{Binding Path=DataContext.SelectDayCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                 CommandParameter="{Binding}">
                             <Grid Background="{Binding Path=Type, Converter={StaticResource DayTypeToBrushConverter}}">
-                                <Label Grid.Column="0" Content="{Binding Path=Date.Day}" />
+                                <Label Grid.Column="0" Content="{Binding Path=Date.Day}" FontWeight="Bold" />
                                 <Label Grid.Column="0" Content="{Binding Path=Project}" VerticalAlignment="Bottom"/>
                             </Grid>
                         </Button>

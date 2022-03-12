@@ -3,7 +3,7 @@ using TimeReporter.Model;
 
 namespace TimeReporter.UI.Models
 {
-    internal class SelectableDay : Day, INotifyPropertyChanged
+    public class SelectableDay : Day, INotifyPropertyChanged
     {
         private bool _isSelected;
 

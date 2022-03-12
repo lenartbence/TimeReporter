@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace TimeReporter.UI.ViewModels
 {
-    internal abstract class AbstractViewModel : INotifyPropertyChanged
+    public abstract class AbstractViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

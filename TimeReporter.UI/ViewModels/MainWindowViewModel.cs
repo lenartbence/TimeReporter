@@ -2,57 +2,37 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using TimeReporter.Core;
+using TimeReporter.Core.Exporters;
+using TimeReporter.Core.Exporters.Factory;
+using TimeReporter.Core.Storage;
 using TimeReporter.Model;
 using TimeReporter.UI.Commands;
 using TimeReporter.UI.Models;
 
 namespace TimeReporter.UI.ViewModels
 {
-    class MainWindowViewModel : AbstractViewModel
+    public class MainWindowViewModel : AbstractViewModel
     {
-        public MainWindowViewModel()
+        private readonly IStorageManager<Day, DateTime> _dayStorage;
+        private readonly IStorageManager<ExporterDto> _exporterStorage;
+        private DateTime _currentMonth;
+        private ObservableCollection<SelectableDay> _days;
+
+        public MainWindowViewModel(
+            IStorageManager<Day, DateTime> dayStorage,
+            IStorageManager<ExporterDto> exporterStorage,
+            IExporterFactory exporterFactory)
         {
+            InitializeCommands();
+
+            _dayStorage = dayStorage;
+            _exporterStorage = exporterStorage;
+
+            var storedExporters = _exporterStorage.Load().ToList();
+            Exporters = exporterFactory.GetExporters(storedExporters).ToList();
+
             CurrentMonth = DateTime.Now;
-
-            NextMonthCommand = new RelayCommand(() => CurrentMonth = CurrentMonth.AddMonths(1));
-            PreviousMonthCommand = new RelayCommand(() => CurrentMonth = CurrentMonth.AddMonths(-1));
-            ApplyDayTypeCommand = new RelayCommand(() =>
-            {
-                if (SelectedDayType == null)
-                {
-                    return;
-                }
-
-                var temp = Days.ToList();
-                foreach (var day in temp)
-                {
-                    if (!day.IsSelected)
-                        continue;
-
-                    if (day.Type != DayType.Weekend)
-                    {
-                        // TODO: Eliminate magic string
-                        if (SelectedDayType == "National Holiday")
-                        {
-                            day.Type = DayType.NationalHoliday;
-                        }
-                        else if (SelectedDayType == "Day Off")
-                        {
-                            day.Type = DayType.DayOff;
-                        }
-                        else
-                        {
-                            day.Type = DayType.Work;
-                        }
-                        day.Project = SelectedDayType;
-                    }
-                }
-                Days = new ObservableCollection<SelectableDay>(temp);
-            });
-            SelectDayCommand = new SelectDayCommand();
         }
 
         public DateTime CurrentMonth
@@ -78,11 +58,11 @@ namespace TimeReporter.UI.ViewModels
 
         public string UserName { get; set; }
 
-        public List<string> Projects { get; set; } = new List<string>() { "National Holiday", "Day Off", "OD Mutterschutz", "OD Kündigung Schwerbehinderte" };
+        public List<string> Projects { get; set; } = new List<string>() { "Weekend", "National Holiday", "Day Off", "OD Mutterschutz", "OD Kündigung Schwerbehinderte" };
 
         public string SelectedDayType { get; set; }
 
-        public List<IExporter> Exporters { get; set; } = new List<IExporter>() { new DummyExporter() };
+        public List<IExporter> Exporters { get; set; }
 
         public RelayCommand NextMonthCommand { get; set; }
 
@@ -92,28 +72,39 @@ namespace TimeReporter.UI.ViewModels
 
         public SelectDayCommand SelectDayCommand { get; set; }
 
-        private DateTime _currentMonth;
-        private ObservableCollection<SelectableDay> _days;
+        public RelayCommand SelectAllWeekdaysCommand { get; set; }
+
+        public RelayCommand DeselectAllCommand { get; set; }
 
         private void LoadDays(DateTime target)
         {
-            // TODO: Load from file OR initialize
-            InitializeDays(target);
+            IEnumerable<Day> content = _dayStorage.Load(target);
+            if (!content.Any())
+            {
+                content = Enumerable.Range(1, DateTime.DaysInMonth(target.Year, target.Month))
+                                      .Select(day =>
+                                      {
+                                          DateTime date = new DateTime(target.Year, target.Month, day);
+                                          return new Day()
+                                          {
+                                              Date = date,
+                                              Type = GetDayType(date)
+                                          };
+                                      });
+            }
+
+            InitializeDays(content);
         }
 
-        private void InitializeDays(DateTime target)
+        private void InitializeDays(IEnumerable<Day> content)
         {
-            Days = new ObservableCollection<SelectableDay>(Enumerable.Range(1, DateTime.DaysInMonth(target.Year, target.Month))
-                                    .Select(day =>
-                                    {
-                                        DateTime date = new DateTime(target.Year, target.Month, day);
-                                        return new SelectableDay()
-                                        {
-                                            Date = date,
-                                            Type = GetDayType(date),
-                                            IsSelected = false
-                                        };
-                                    }));
+            Days = new ObservableCollection<SelectableDay>(content.Select(x => new SelectableDay()
+            {
+                IsSelected = false,
+                Date = x.Date,
+                Project = x.Project,
+                Type = x.Type
+            }));
         }
 
         private static DayType GetDayType(DateTime date)
@@ -121,21 +112,89 @@ namespace TimeReporter.UI.ViewModels
             // TODO: Get national holidays
             return date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday ? DayType.Weekend : DayType.Work;
         }
-    }
 
-    class DummyExporter : IExporter
-    {
-        public string Name => "Dummy";
-
-        public string TemplatePath { get; set; }
-
-        public string OutputDirectory { get; set; }
-
-        public bool IsEnabled { get; set; }
-
-        public void Export(List<Day> days)
+        private void ChangeMonth(int diff)
         {
-            throw new NotImplementedException();
+            CurrentMonth = CurrentMonth.AddMonths(diff);
+        }
+
+        private void InitializeCommands()
+        {
+            NextMonthCommand = new RelayCommand(() => ChangeMonth(1));
+            PreviousMonthCommand = new RelayCommand(() => ChangeMonth(-1));
+
+            ApplyDayTypeCommand = new RelayCommand(() =>
+            {
+                if (SelectedDayType == null)
+                {
+                    return;
+                }
+
+                var temp = Days.ToList();
+                foreach (var day in temp)
+                {
+                    if (!day.IsSelected)
+                        continue;
+
+                    // TODO: Eliminate magic string
+                    if (SelectedDayType == "National Holiday")
+                    {
+                        day.Type = DayType.NationalHoliday;
+                    }
+                    else if (SelectedDayType == "Day Off")
+                    {
+                        day.Type = DayType.DayOff;
+                    }
+                    else if (SelectedDayType == "Weekend")
+                    {
+                        day.Type = DayType.Weekend;
+                    }
+                    else
+                    {
+                        day.Type = DayType.Work;
+                    }
+
+                    day.Project = day.Type == DayType.Weekend ? string.Empty : SelectedDayType;
+                }
+                Days = new ObservableCollection<SelectableDay>(temp);
+                _dayStorage.Save(Days);
+
+                DeselectAllCommand.Execute(null);
+            });
+
+            SelectDayCommand = new SelectDayCommand();
+
+            SelectAllWeekdaysCommand = new RelayCommand(() =>
+            {
+                foreach (var d in Days)
+                {
+                    if (GetDayType(d.Date) != DayType.Weekend)
+                    {
+                        d.IsSelected = true;
+                    }
+                }
+            });
+
+            DeselectAllCommand = new RelayCommand(() =>
+            {
+                foreach (var d in Days)
+                {
+                    d.IsSelected = false;
+                }
+            });
+        }
+
+        private void SaveExporters()
+        {
+            var dtos = Exporters.Select(x => new ExporterDto()
+            {
+                IsEnabled = x.IsEnabled,
+                OutputDirectory = x.OutputDirectory,
+                TemplatePath = x.TemplatePath,
+                TypeName = x.GetType().FullName
+            });
+
+            _exporterStorage.Save(dtos);
         }
     }
 }
