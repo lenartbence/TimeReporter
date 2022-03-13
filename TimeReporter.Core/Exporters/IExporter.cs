@@ -13,6 +13,8 @@ namespace TimeReporter.Core.Exporters
 
         string OutputDirectory { get; set; }
 
+        string Message { get; set; }
+
         void Export(List<Day> days);
     }
 }

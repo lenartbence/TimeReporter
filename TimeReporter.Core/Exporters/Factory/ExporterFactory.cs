@@ -14,18 +14,8 @@ namespace TimeReporter.Core.Exporters.Factory
                 .SelectMany(s => s.GetTypes())
                 .Where(p => type.IsAssignableFrom(p))
                 .Where(p => p.IsClass)
+                .Where(p => !p.IsAbstract)
                 .Select(p => new ExporterDto() { TypeName = p.FullName });
-
-            //foreach (var implementation in allImplementations)
-            //{
-            //    var match = storedExporters.FirstOrDefault(x => x.TypeName == implementation.TypeName);
-            //    if (match != null)
-            //    {
-            //        implementation.IsEnabled = match.IsEnabled;
-            //        implementation.OutputDirectory = match.OutputDirectory;
-            //        implementation.TemplatePath = match.TemplatePath;
-            //    }
-            //}
 
             var result = new List<IExporter>();
             foreach (var dto in allImplementations)

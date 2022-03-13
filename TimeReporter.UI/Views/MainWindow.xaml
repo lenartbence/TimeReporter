@@ -22,16 +22,21 @@
             <Grid Grid.Column="0" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Vertical">
                     <ListBox ItemsSource="{Binding Path=Projects}" SelectedItem="{Binding Path=SelectedDayType}"/>
                     <Button Content=">> Apply to selected >>" Command="{Binding ApplyDayTypeCommand}"/>
-                    <Button Content="Select All Weekdays" Command="{Binding SelectAllWeekdaysCommand}"/>
-                    <Button Content="Deselect All" Command="{Binding DeselectAllCommand}"/>
+                    <Border BorderBrush="LightGray" BorderThickness="0 1 0 0" Padding="0 5" Margin="0 3 0 0">
+                        <Button Content="Select All Weekdays" Command="{Binding SelectAllWeekdaysCommand}"/>
+                    </Border>
+                        <Button Content="Deselect All" Command="{Binding DeselectAllCommand}"/>
                     <Label Content="Exporters:"/>
                 </StackPanel>
-                <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
                     <ItemsControl ItemsSource="{Binding Path=Exporters}" >
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -58,6 +63,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
+                <Button Grid.Row="4" Content="Export" Command="{Binding Path=ExportCommand}"/>
             </Grid>
         </Border>
 

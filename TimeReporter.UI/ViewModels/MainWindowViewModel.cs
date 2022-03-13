@@ -76,6 +76,8 @@ namespace TimeReporter.UI.ViewModels
 
         public RelayCommand DeselectAllCommand { get; set; }
 
+        public RelayCommand ExportCommand { get; set; }
+
         private void LoadDays(DateTime target)
         {
             IEnumerable<Day> content = _dayStorage.Load(target);
@@ -113,15 +115,10 @@ namespace TimeReporter.UI.ViewModels
             return date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday ? DayType.Weekend : DayType.Work;
         }
 
-        private void ChangeMonth(int diff)
-        {
-            CurrentMonth = CurrentMonth.AddMonths(diff);
-        }
-
         private void InitializeCommands()
         {
-            NextMonthCommand = new RelayCommand(() => ChangeMonth(1));
-            PreviousMonthCommand = new RelayCommand(() => ChangeMonth(-1));
+            NextMonthCommand = new RelayCommand(() => CurrentMonth = CurrentMonth.AddMonths(1));
+            PreviousMonthCommand = new RelayCommand(() => CurrentMonth = CurrentMonth.AddMonths(-1));
 
             ApplyDayTypeCommand = new RelayCommand(() =>
             {
@@ -180,6 +177,19 @@ namespace TimeReporter.UI.ViewModels
                 foreach (var d in Days)
                 {
                     d.IsSelected = false;
+                }
+            });
+
+            ExportCommand = new RelayCommand(() =>
+            {
+                SaveExporters();
+
+                foreach (var e in Exporters)
+                {
+                    if (e.IsEnabled)
+                    {
+                        e.Export(Days.Select(x => x as Day).ToList());
+                    }
                 }
             });
         }
