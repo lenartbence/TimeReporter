@@ -25,7 +25,6 @@ namespace TimeReporter.Core.Exporters.Factory
 
                 exporterInstance.IsEnabled = match?.IsEnabled ?? dto.IsEnabled;
                 exporterInstance.TemplatePath = match?.TemplatePath ?? dto.TemplatePath;
-                exporterInstance.OutputDirectory = match?.OutputDirectory ?? dto.OutputDirectory;
 
                 result.Add(exporterInstance);
             }

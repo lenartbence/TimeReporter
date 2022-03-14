@@ -7,7 +7,5 @@
         public bool IsEnabled { get; set; }
 
         public string TemplatePath { get; set; }
-
-        public string OutputDirectory { get; set; }
     }
 }

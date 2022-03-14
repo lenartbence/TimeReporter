@@ -33,7 +33,7 @@
                     <Border BorderBrush="LightGray" BorderThickness="0 1 0 0" Padding="0 5" Margin="0 3 0 0">
                         <Button Content="Select All Weekdays" Command="{Binding SelectAllWeekdaysCommand}"/>
                     </Border>
-                        <Button Content="Deselect All" Command="{Binding DeselectAllCommand}"/>
+                    <Button Content="Deselect All" Command="{Binding DeselectAllCommand}"/>
                     <Label Content="Exporters:"/>
                 </StackPanel>
                 <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
@@ -54,8 +54,6 @@
                                             </Grid.RowDefinitions>
                                             <Label Content="Template Path: " Grid.Row="0" Grid.Column="0"/>
                                             <TextBox Text="{Binding Path=TemplatePath}" Grid.Row="0" Grid.Column="1" Margin="0 2"/>
-                                            <Label Content="Export Directory: " Grid.Row="1" Grid.Column="0"/>
-                                            <TextBox Text="{Binding Path=OutputDirectory}" Grid.Row="1" Grid.Column="1" Margin="0 2"/>
                                         </Grid>
                                     </StackPanel>
                                 </Border>

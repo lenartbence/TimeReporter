@@ -199,7 +199,6 @@ namespace TimeReporter.UI.ViewModels
             var dtos = Exporters.Select(x => new ExporterDto()
             {
                 IsEnabled = x.IsEnabled,
-                OutputDirectory = x.OutputDirectory,
                 TemplatePath = x.TemplatePath,
                 TypeName = x.GetType().FullName
             });

@@ -11,8 +11,6 @@ namespace TimeReporter.Core.Exporters
 
         string TemplatePath { get; set; }
 
-        string OutputDirectory { get; set; }
-
         string Message { get; set; }
 
         void Export(List<Day> days);

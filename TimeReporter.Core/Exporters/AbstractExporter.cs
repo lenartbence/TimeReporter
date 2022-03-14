@@ -12,8 +12,6 @@ namespace TimeReporter.Core.Exporters
 
         public virtual string TemplatePath { get; set; }
 
-        public virtual string OutputDirectory { get; set; }
-
         public virtual string Message { get; set; }
 
         public virtual void Export(List<Day> days)
@@ -21,12 +19,6 @@ namespace TimeReporter.Core.Exporters
             if (!File.Exists(TemplatePath))
             {
                 Message = "Template not found.";
-                return;
-            }
-
-            if (!Directory.Exists(OutputDirectory))
-            {
-                Message = "Output directory does not exist.";
                 return;
             }
         }

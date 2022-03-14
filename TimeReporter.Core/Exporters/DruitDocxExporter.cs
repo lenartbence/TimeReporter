@@ -27,8 +27,12 @@ namespace TimeReporter.Core.Exporters
             // Then it can be solved by string replace insead of table parsing.
             try
             {
-                string outputPath = Path.Join(OutputDirectory, $"{days.First().Date:yyyy-MM}.docx");
+                string outputDirectory = Path.Join(Path.GetDirectoryName(TemplatePath), Name);
+                string outputPath = Path.Join(outputDirectory, $"{days.First().Date:yyyy-MM}.docx");
+
+                Directory.CreateDirectory(outputDirectory);
                 File.Copy(TemplatePath, outputPath, true);
+
                 using (WordprocessingDocument doc = WordprocessingDocument.Open(outputPath, true))
                 {
                     HandleTables(dayMap, doc);
