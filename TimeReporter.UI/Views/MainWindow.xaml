@@ -19,7 +19,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Border BorderBrush="LightGray" BorderThickness="0 0 1 0" Padding="5 0" Margin="0 0 3 0">
-            <Grid Grid.Column="0" HorizontalAlignment="Center">
+            <Grid Grid.Column="0" HorizontalAlignment="Center" MaxWidth="350">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -55,6 +55,7 @@
                                             <Label Content="Template Path: " Grid.Row="0" Grid.Column="0"/>
                                             <TextBox Text="{Binding Path=TemplatePath}" Grid.Row="0" Grid.Column="1" Margin="0 2"/>
                                         </Grid>
+                                        <Label Content="{Binding Path=Message}"/>
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>

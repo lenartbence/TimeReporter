@@ -10,8 +10,7 @@ namespace TimeReporter.Core.Exporters.Factory
         public IEnumerable<IExporter> GetExporters(List<ExporterDto> storedExporters)
         {
             var type = typeof(IExporter);
-            var allImplementations = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
+            var allImplementations = GetType().Assembly.GetTypes()
                 .Where(p => type.IsAssignableFrom(p))
                 .Where(p => p.IsClass)
                 .Where(p => !p.IsAbstract)

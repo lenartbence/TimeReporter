@@ -113,7 +113,7 @@ namespace TimeReporter.Core.Exporters
                     }
                 case DayType.NationalHoliday:
                     {
-                        start = "szün.";
+                        start = string.Empty;
                         end = string.Empty;
                         hours = "0";
                         break;

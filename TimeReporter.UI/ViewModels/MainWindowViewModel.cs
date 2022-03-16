@@ -30,7 +30,7 @@ namespace TimeReporter.UI.ViewModels
             _exporterStorage = exporterStorage;
 
             var storedExporters = _exporterStorage.Load().ToList();
-            Exporters = exporterFactory.GetExporters(storedExporters).ToList();
+            Exporters = exporterFactory.GetExporters(storedExporters).Select(x => new NotifierExporter(x)).ToList();
 
             CurrentMonth = DateTime.Now;
         }
@@ -62,7 +62,7 @@ namespace TimeReporter.UI.ViewModels
 
         public string SelectedDayType { get; set; }
 
-        public List<IExporter> Exporters { get; set; }
+        public List<NotifierExporter> Exporters { get; set; }
 
         public RelayCommand NextMonthCommand { get; set; }
 
@@ -200,7 +200,7 @@ namespace TimeReporter.UI.ViewModels
             {
                 IsEnabled = x.IsEnabled,
                 TemplatePath = x.TemplatePath,
-                TypeName = x.GetType().FullName
+                TypeName = x.TypeName
             });
 
             _exporterStorage.Save(dtos);
