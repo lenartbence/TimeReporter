@@ -16,18 +16,23 @@ namespace TimeReporter.UI.ViewModels
     {
         private readonly IStorageManager<Day, DateTime> _dayStorage;
         private readonly IStorageManager<ExporterDto> _exporterStorage;
+        private readonly IStorageReader<Day, DateTime> _holidayReader;
+
         private DateTime _currentMonth;
         private ObservableCollection<SelectableDay> _days;
+        private string _bottomMessage;
 
         public MainWindowViewModel(
             IStorageManager<Day, DateTime> dayStorage,
             IStorageManager<ExporterDto> exporterStorage,
+            IStorageReader<Day, DateTime> holidayReader,
             IExporterFactory exporterFactory)
         {
             InitializeCommands();
 
             _dayStorage = dayStorage;
             _exporterStorage = exporterStorage;
+            _holidayReader = holidayReader;
 
             var storedExporters = _exporterStorage.Load().ToList();
             Exporters = exporterFactory.GetExporters(storedExporters).Select(x => new NotifierExporter(x)).ToList();
@@ -56,6 +61,12 @@ namespace TimeReporter.UI.ViewModels
             set => Set(ref _days, value);
         }
 
+        public string BottomMessage
+        {
+            get => _bottomMessage;
+            set => Set(ref _bottomMessage, value);
+        }
+
         public string UserName { get; set; }
 
         public List<string> Projects { get; set; } = new List<string>() { "Weekend", "National Holiday", "Day Off", "OD Mutterschutz", "OD Kündigung Schwerbehinderte" };
@@ -72,7 +83,7 @@ namespace TimeReporter.UI.ViewModels
 
         public SelectDayCommand SelectDayCommand { get; set; }
 
-        public RelayCommand SelectAllWeekdaysCommand { get; set; }
+        public RelayCommand SelectAllWorkdaysCommand { get; set; }
 
         public RelayCommand DeselectAllCommand { get; set; }
 
@@ -80,7 +91,10 @@ namespace TimeReporter.UI.ViewModels
 
         private void LoadDays(DateTime target)
         {
+            BottomMessage = string.Empty;
+
             IEnumerable<Day> content = _dayStorage.Load(target);
+            IEnumerable<Day> specialDays = _holidayReader.Load(target);
             if (!content.Any())
             {
                 content = Enumerable.Range(1, DateTime.DaysInMonth(target.Year, target.Month))
@@ -90,9 +104,14 @@ namespace TimeReporter.UI.ViewModels
                                           return new Day()
                                           {
                                               Date = date,
-                                              Type = GetDayType(date)
+                                              Type = GetDayType(date, specialDays)
                                           };
                                       });
+            }
+
+            if (specialDays == null || !specialDays.Any())
+            {
+                BottomMessage = "Could not load national holidays. Please review manually.";
             }
 
             InitializeDays(content);
@@ -109,10 +128,24 @@ namespace TimeReporter.UI.ViewModels
             }));
         }
 
-        private static DayType GetDayType(DateTime date)
+        private static DayType GetDayType(DateTime date, IEnumerable<Day> specialDays)
         {
-            // TODO: Get national holidays
-            return date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday ? DayType.Weekend : DayType.Work;
+            var result = date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday ? DayType.Weekend : DayType.Work;
+
+            var special = specialDays?.FirstOrDefault(x => x.Date == date);
+            if (special != null)
+            {
+                if (special.Type == DayType.Work && result == DayType.Weekend)
+                {
+                    result = DayType.Work;
+                }
+                else if (special.Type == DayType.NationalHoliday && result == DayType.Work)
+                {
+                    result = DayType.NationalHoliday;
+                }
+            }
+
+            return result;
         }
 
         private void InitializeCommands()
@@ -161,11 +194,11 @@ namespace TimeReporter.UI.ViewModels
 
             SelectDayCommand = new SelectDayCommand();
 
-            SelectAllWeekdaysCommand = new RelayCommand(() =>
+            SelectAllWorkdaysCommand = new RelayCommand(() =>
             {
                 foreach (var d in Days)
                 {
-                    if (GetDayType(d.Date) != DayType.Weekend)
+                    if (d.Type == DayType.Work)
                     {
                         d.IsSelected = true;
                     }

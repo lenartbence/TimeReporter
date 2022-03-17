@@ -11,6 +11,7 @@
         <converters:DateTimeToDayOfWeekConverter x:Key="DateTimeToDayOfWeekConverter"/>
         <converters:DayTypeToBrushConverter x:Key="DayTypeToBrushConverter"/>
         <converters:BoolToThicknessConverter x:Key="BoolToThicknessConverter"/>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
     </Window.Resources>
 
     <Grid>
@@ -31,7 +32,7 @@
                     <ListBox ItemsSource="{Binding Path=Projects}" SelectedItem="{Binding Path=SelectedDayType}"/>
                     <Button Content=">> Apply to selected >>" Command="{Binding ApplyDayTypeCommand}"/>
                     <Border BorderBrush="LightGray" BorderThickness="0 1 0 0" Padding="0 5" Margin="0 3 0 0">
-                        <Button Content="Select All Weekdays" Command="{Binding SelectAllWeekdaysCommand}"/>
+                        <Button Content="Select All Workdays" Command="{Binding SelectAllWorkdaysCommand}"/>
                     </Border>
                     <Button Content="Deselect All" Command="{Binding DeselectAllCommand}"/>
                     <Label Content="Exporters:"/>
@@ -77,7 +78,10 @@
                    FontWeight="Bold"/>
                 <Button Content=">" Width="20" Height="20" FontWeight="Bold" Command="{Binding Path=NextMonthCommand}"/>
             </StackPanel>
-
+            <Label DockPanel.Dock="Bottom" 
+                   FontWeight="Bold"
+                   Content="{Binding Path=BottomMessage}" 
+                   Visibility="{Binding Path=BottomMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
             <UniformGrid DockPanel.Dock="Top" Columns="7" Rows="1">
                 <Label Content="Monday"/>
                 <Label Content="Tuesday"/>

@@ -2,17 +2,13 @@
 
 namespace TimeReporter.Core.Storage
 {
-    public interface IStorageManager<TData, TParameter>
+    public interface IStorageManager<TData, TParameter> : IStorageReader<TData, TParameter>
     {
         void Save(IEnumerable<TData> data);
-
-        IEnumerable<TData> Load(TParameter parameter);
     }
 
-    public interface IStorageManager<TData>
+    public interface IStorageManager<TData> : IStorageReader<TData>
     {
         void Save(IEnumerable<TData> data);
-
-        IEnumerable<TData> Load();
     }
 }

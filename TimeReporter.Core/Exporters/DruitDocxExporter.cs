@@ -42,7 +42,7 @@ namespace TimeReporter.Core.Exporters
             }
             catch (Exception ex)
             {
-                Message = "Error during export";
+                Message = ex.Message;
                 // TODO: Log
             }
         }

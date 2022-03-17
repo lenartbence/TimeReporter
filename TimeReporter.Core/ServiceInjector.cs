@@ -13,6 +13,7 @@ namespace TimeReporter.Core
             services.AddTransient<IExporterFactory, ExporterFactory>();
             services.AddTransient<IStorageManager<Day, DateTime>, DayStorageManager>();
             services.AddTransient<IStorageManager<ExporterDto>, ExporterStorageManager>();
+            services.AddTransient<IStorageReader<Day, DateTime>, NationalSpecialDayStorageManager>();
         }
     }
 }
