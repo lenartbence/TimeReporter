@@ -57,10 +57,20 @@ namespace TimeReporter.Core.Exporters
                 Cell hoursCell = rows[i].Elements<Cell>().FirstOrDefault(x => x.CellReference == $"C{firstDateCellIndex + i}");
                 Cell noteCell = rows[i].Elements<Cell>().FirstOrDefault(x => x.CellReference == $"D{firstDateCellIndex + i}");
 
-                bool formatNote = days[i].Type == DayType.DayOff || days[i].Type == DayType.NationalHoliday;
-                string note = formatNote ? $"({days[i].Project?.ToLower()})" : days[i].Project;
+                int hours;
+                string note;
+                if (days[i].Type == DayType.Work)
+                {
+                    hours = 8;
+                    note = days[i].Project;
+                }
+                else
+                {
+                    hours = 0;
+                    note = string.Empty;
+                }
 
-                hoursCell.CellValue = new CellValue(days[i].Type == DayType.Work ? 8 : 0);
+                hoursCell.CellValue = new CellValue(hours);
                 noteCell.CellValue = new CellValue(note);
 
                 hoursCell.DataType = new EnumValue<CellValues>(CellValues.Number);
