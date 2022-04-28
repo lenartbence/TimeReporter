@@ -21,14 +21,21 @@ namespace TimeReporter.Core.Exporters
         {
             base.Export(days);
 
+            DateTime currentMonthStart = days.First().Date;
             var dayMap = days.ToDictionary(x => x.Date.Day);
+
+            // The docx always contains 31 days, so I fill missing days with weekend.
+            for (int i = days.Count; i < 31; i++)
+            {
+                dayMap[i + 1] = new Day() { Date = currentMonthStart.AddDays(i), Type = DayType.Weekend };
+            }
 
             // TODO: Whole thing could be simpler if the template contained numbered placeholders.
             // Then it can be solved by string replace insead of table parsing.
             try
             {
                 string outputDirectory = Path.Join(Path.GetDirectoryName(TemplatePath), Name);
-                string outputPath = Path.Join(outputDirectory, $"{days.First().Date:yyyy-MM}.docx");
+                string outputPath = Path.Join(outputDirectory, $"{currentMonthStart:yyyy-MM}.docx");
 
                 Directory.CreateDirectory(outputDirectory);
                 File.Copy(TemplatePath, outputPath, true);
